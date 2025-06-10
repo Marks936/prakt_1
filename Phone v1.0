@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="lv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Pasūtīšana un Piegāde</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+        
+        body {
+            line-height: 1.6;
+            color: #333;
+            background-color: #f9f9f9;
+        }
+        
+        header {
+            background-color: #ff6b6b;
+            color: white;
+            padding: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            width: 100%;
+        }
+        
+        nav {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        
+        .cart-icon {
+            background-color: white;
+            color: #ff6b6b;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .container {
+            padding: 1rem;
+            max-width: 100%;
+        }
+        
+        h2 {
+            margin: 1rem 0;
+            text-align: center;
+        }
+        
+        .food-list {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+        
+        .food-item {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        
+        .food-item:hover {
+            transform: translateY(-5px);
+        }
+        
+        .food-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        .food-item h3 {
+            padding: 0.8rem;
+            font-size: 1.2rem;
+        }
+        
+        .discount {
+            color: #ff6b6b;
+            font-weight: bold;
+        }
+        
+        del {
+            color: #999;
+        }
+        
+        .add-to-cart {
+            width: 100%;
+            padding: 0.8rem;
+            background-color: #ff6b6b;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        
+        .add-to-cart:hover {
+            background-color: #ff5252;
+        }
+        
+        .cart-popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 100%;
+            max-width: 400px;
+            height: 100%;
+            background: white;
+            z-index: 1000;
+            overflow-y: auto;
+            transform: translateX(100%);
+            transition: transform 0.3s;
+        }
+        
+        .cart-popup.active {
+            transform: translateX(0);
+            display: block;
+        }
+        
+        .cart-content {
+            padding: 1.5rem;
+            position: relative;
+        }
+        
+        .close {
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        #cart-items {
+            list-style: none;
+            margin: 1rem 0;
+        }
+        
+        #cart-items li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        #delivery-form {
+            margin: 1.5rem 0;
+        }
+        
+        #delivery-form label {
+            display: block;
+            margin: 0.8rem 0 0.3rem;
+            font-weight: bold;
+        }
+        
+        #delivery-form input,
+        #delivery-form textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        
+        #delivery-form textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        #order-button {
+            width: 100%;
+            padding: 1rem;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        #order-button:hover {
+            background-color: #45a049;
+        }
+        
+        .cart-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+        
+        .cart-overlay.active {
+            display: block;
+        }
+        
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 1rem;
+            margin-top: 2rem;
+        }
+        
+        @media (min-width: 600px) {
+            .food-list {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            h1 {
+                width: auto;
+                margin-bottom: 0;
+            }
+            
+            nav {
+                margin-bottom: 0;
+            }
+        }
+        
+        @media (min-width: 900px) {
+            .food-list {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🍽️ Ēdienu Pasūtīšana</h1>
+        <nav>
+            <a href="about.html">Par Mums</a>
+            <a href="menu.html">Ēdienkarte</a>
+        </nav>
+        <div class="cart-icon" onclick="toggleCart()">🛒 <span id="cart-count">0</span></div>
+    </header>
+
+    <main class="container">
+        <h2>Populārākie Ēdieni</h2>
+        <div class="food-list">
+            <div class="food-item" data-price="8.00" data-name="Pica">
+                <img src="images/pizza.webp" alt="Pica" loading="lazy">
+                <h3>Pica <del>10.00€</del> <span class="discount">8.00€</span></h3>
+                <button class="add-to-cart">Pievienot Groziņam</button>
+            </div>
+            <div class="food-item" data-price="6.50" data-name="Sushi">
+                <img src="images/sushi.webp" alt="Sushi" loading="lazy">
+                <h3>Sushi <del>8.00€</del> <span class="discount">6.50€</span></h3>
+                <button class="add-to-cart">Pievienot Groziņam</button>
+            </div>
+            <div class="food-item" data-price="3.99" data-name="Burgers">
+                <img src="images/burger.webp" alt="Burger" loading="lazy">
+                <h3>Burgers <del>5.00€</del> <span class="discount">3.99€</span></h3>
+                <button class="add-to-cart">Pievienot Groziņam</button>
+            </div>
+        </div>
+    </main>
+
+    <div id="cart-popup" class="cart-popup">
+        <div class="cart-content">
+            <span class="close" onclick="toggleCart()">&times;</span>
+            <h2>🛍️ Tavs Groziņš</h2>
+            <ul id="cart-items"></ul>
+            <p>Bez PVN: <span id="subtotal">0.00€</span></p>
+            <p>Ar PVN (21%): <span id="total">0.00€</span></p>
+
+            <form id="delivery-form">
+                <label for="name">Vārds un Uzvārds:</label>
+                <input type="text" id="name" name="name" required>
+
+                <label for="phone">Telefons:</label>
+                <input type="tel" id="phone" name="phone" required pattern="[0-9+ ]+">
+
+                <label for="address">Piegādes Adrese:</label>
+                <textarea id="address" name="address" required></textarea>
+            </form>
+
+            <button id="order-button">✅ Pasūtīt</button>
+        </div>
+    </div>
+    <div id="cart-overlay" class="cart-overlay" onclick="toggleCart()"></div>
+
+    <footer>
+        <p>&copy; 2025 Ēdienu Pasūtīšana. Visas tiesības aizsargātas.</p>
+    </footer>
+
+    <script>
+        // Groziņa funkcionalitāte
+        let cart = [];
+        
+        function updateCartCount() {
+            document.getElementById('cart-count').textContent = cart.reduce((total, item) => total + item.quantity, 0);
+        }
+        
+        function updateCartDisplay() {
+            const cartItemsEl = document.getElementById('cart-items');
+            cartItemsEl.innerHTML = '';
+            
+            let subtotal = 0;
+            
+            cart.forEach(item => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <span>${item.name} x${item.quantity}</span>
+                    <span>${(item.price * item.quantity).toFixed(2)}€</span>
+                `;
+                cartItemsEl.appendChild(li);
+                subtotal += item.price * item.quantity;
+            });
+            
+            document.getElementById('subtotal').textContent = subtotal.toFixed(2) + '€';
+            document.getElementById('total').textContent = (subtotal * 1.21).toFixed(2) + '€';
+        }
+        
+        function toggleCart() {
+            document.getElementById('cart-popup').classList.toggle('active');
+            document.getElementById('cart-overlay').classList.toggle('active');
+            document.body.style.overflow = document.getElementById('cart-popup').classList.contains('active') ? 'hidden' : '';
+            
+            if (document.getElementById('cart-popup').classList.contains('active')) {
+                updateCartDisplay();
+            }
+        }
+        
+        // Pievienošana groziņam
+        document.querySelectorAll('.add-to-cart').forEach(button => {
+            button.addEventListener('click', function() {
+                const foodItem = this.closest('.food-item');
+                const name = foodItem.dataset.name;
+                const price = parseFloat(foodItem.dataset.price);
+                
+                const existingItem = cart.find(item => item.name === name);
+                if (existingItem) {
+                    existingItem.quantity++;
+                } else {
+                    cart.push({ name, price, quantity: 1 });
+                }
+                
+                updateCartCount();
+                
+                // Animācija
+                const cartIcon = document.querySelector('.cart-icon');
+                cartIcon.classList.add('animate');
+                setTimeout(() => cartIcon.classList.remove('animate'), 500);
+            });
+        });
+        
+        // Pasūtījuma apstrāde
+        document.getElementById('order-button').addEventListener('click', function() {
+            const form = document.getElementById('delivery-form');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+            
+            if (cart.length === 0) {
+                alert('Jūsu groziņš ir tukšs!');
+                return;
+            }
+            
+            const name = document.getElementById('name').value;
+            const phone = document.getElementById('phone').value;
+            const address = document.getElementById('address').value;
+            const total = document.getElementById('total').textContent;
+            
+            // Šeit varētu būt AJAX pieprasījums uz serveri
+            alert(`Paldies, ${name}! Jūsu pasūtījums par ${total} ir saņemts un tiks piegādāts uz ${address}. Mēs ar jums sazināsimies pa telefonu ${phone}.`);
+            
+            // Notīra groziņu pēc pasūtījuma
+            cart = [];
+            updateCartCount();
+            form.reset();
+            toggleCart();
+        });
+        
+        // Adaptīvais izkārtojums
+        function handleResize() {
+            if (window.innerWidth < 600) {
+                document.querySelector('h1').textContent = '🍽️ Ēdienu Pasūtīšana';
+            } else {
+                document.querySelector('h1').textContent = '🍽️ Ēdienu Pasūtīšana un Piegāde';
+            }
+        }
+        
+        window.addEventListener('resize', handleResize);
+        handleResize();
+    </script>
+</body>
+</html>
