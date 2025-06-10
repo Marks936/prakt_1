@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="lv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Pasūtīšana un Piegāde</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>🍽️ Ēdienu Pasūtīšana un Piegāde</h1>
+        <nav>
+            <a href="about.html">Par Mums</a>
+            <a href="menu.html">Ēdienkarte</a>
+        </nav>
+        <div class="cart-icon" onclick="toggleCart()">🛒 <span id="cart-count">0</span></div>
+    </header>
+
+    <main class="container">
+        <h2>Populārākie Ēdieni</h2>
+        <div class="food-list">
+            <div class="food-item" data-price="8.00">
+                <img src="images/pizza.webp" alt="Pica">
+                <h3>Pica <del>10.00€</del> <span class="discount">8.00€</span></h3>
+                <button class="add-to-cart">Pievienot Groziņam</button>
+            </div>
+            <div class="food-item" data-price="6.50">
+                <img src="images/sushi.webp" alt="Sushi">
+                <h3>Sushi <del>8.00€</del> <span class="discount">6.50€</span></h3>
+                <button class="add-to-cart">Pievienot Groziņam</button>
+            </div>
+            <div class="food-item" data-price="9.99">
+                <img src="images/burger.webp" alt="Burger">
+                <h3>Burgers <del>12.00€</del> <span class="discount">9.99€</span></h3>
+                <button class="add-to-cart">Pievienot Groziņam</button>
+            </div>
+        </div>
+    </main>
+
+    <div id="cart-popup" class="cart-popup">
+        <div class="cart-content">
+            <span class="close" onclick="toggleCart()">&times;</span>
+            <h2>🛍️ Tavs Groziņš</h2>
+            <ul id="cart-items"></ul>
+            <p>Bez PVN: <span id="subtotal">0.00€</span></p>
+            <p>Ar PVN (21%): <span id="total">0.00€</span></p>
+
+            <form id="delivery-form">
+                <label for="name">Vārds un Uzvārds:</label>
+                <input type="text" id="name" name="name" required>
+
+                <label for="phone">Telefons:</label>
+                <input type="tel" id="phone" name="phone" required pattern="[0-9+ ]+">
+
+                <label for="address">Piegādes Adrese:</label>
+                <textarea id="address" name="address" required></textarea>
+            </form>
+
+            <button id="order-button">✅ Pasūtīt</button>
+        </div>
+    </div>
+    <div id="cart-overlay" class="cart-overlay" onclick="toggleCart()"></div>
+
+    <footer>
+        <p>&copy; 2025 Ēdienu Pasūtīšana. Visas tiesības aizsargātas.</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
